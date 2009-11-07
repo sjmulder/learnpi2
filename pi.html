@@ -158,7 +158,7 @@
 						var blockElement = document.createElement('span');
 						blockElement.id = blockName;
 						blockElement.className = 'pi-digit-block';
-						blockElement.innerText = blockDigits;
+						$(blockElement).text(blockDigits);
 						
 						$('.final.pi-digit-block').before(blockElement);
 					}
