@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<!-- 
+	I, the copyright holder of this work, hereby release it into the public
+  domain. This applies worldwide.
+
+	In case this is not legally possible: I grant anyone the right to use this
+	work for any purpose, without any conditions, unless such conditions are
+	required by law. 
+-->
+
+<html>
+	<head>
+		<title>Learn Pi 2</title>
+		<style type="text/css">
+		
+			body {
+				font-family: "Georgia", serif;
+				font-size: 18pt;
+				margin: 50px;
+			}
+			
+			h1 {
+				display: none;
+			}
+			
+			p {
+				margin-top: 0.5em;
+				margin-bottom: 0.5em;
+			}
+			
+			#digit-input-block {
+				display: inline-block;
+				text-align: center;
+				margin-left: auto;
+			}
+
+			#digit-input {
+				font-size: 16pt;
+				width: 2em;
+			}
+			
+			#last-pi-digit {
+				font-weight: bold;
+			}
+			
+			.game-area {
+				display: inline-block;
+			}
+			
+			.game-form {
+				text-align: right;
+			}
+			
+			.pi {
+				font-size: 24pt;
+			}
+		
+		</style>
+	</head>
+	<body>
+		<h1>Learn Pi 2</h1>
+		<p id="javascript-message">
+			This game requires Javascript to run.
+		</p>
+		<div class="game-area">
+			<p class="pi">
+				<span id="pi-start">3.</span>
+				<span id="pi-digits"></span><span id="last-pi-digit"></span>
+			</p>
+			<form class="game-form">
+				<div id="digit-input-block">
+					<p>
+						<span id="hint-sum"></span>
+						<input id="digit-input" type="text" />
+					</p>
+					<p>
+						<input id="reset-button" value="Start Over" type="button" />
+					</p>
+				</div>
+				<div id="victory-block" style="display: none">
+					<p>Congratulations!</p>
+					<p>You got through <span id="total-digit-count"></span> digits in <span id="game-time"></span> seconds: <span id="game-dps"></span> digits per second.</p>
+					<p><input id="replay-button" value="Play again" type="button" /></p>
+				</div>
+			</form>
+		</div>
+		<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+		<script type="text/javascript">
+
+			learnpi = {};
+	
+			learnpi.digits = 
+				"14159265358979323846264338327950288419716939937510" +
+				"58209749445923078164062862089986280348253421170679";
+		
+			learnpi.formattedDigits = function(digits) {
+				var formatted = '';
+				var pos = 0;
+			
+				for (; pos + 10 <= digits.length; pos += 10) {
+					formatted += digits.slice(pos, pos + 10);
+					formatted += ' ';
+				}
+
+				if (pos != digits.length) {
+					formatted += digits.slice(pos);
+				}
+			
+				return formatted;
+			};
+		
+			learnpi.showDigits = function() {
+				var index = this.currentDigitIndex;
+			
+				if (index < 1) {
+					$('#pi-digits').text('');
+					$('#last-pi-digit').text('');
+				} else if (index == 1) {
+					$('#pi-digits').text('');
+					$('#last-pi-digit').text(this.digits[index - 1]);
+				} else {
+					var shownDigits = this.digits.slice(0, index - 1);
+				
+					$('#pi-digits').text(this.formattedDigits(shownDigits));
+					$('#last-pi-digit').text(this.digits[index - 1]);
+				}			
+			};
+		
+			learnpi.clearInput = function() {
+				$('#digit-input').val('');
+			};
+
+			learnpi.focusOnInput = function() {
+				$('#digit-input').focus();
+			};
+		
+			learnpi.hideJavascriptMessage = function() {
+				$('#javascript-message').hide();
+			};
+		
+			learnpi.showHintSum = function(term1, term2) {
+				$('#hint-sum').text(term1 + " + " + term2 + " =");
+			};
+		
+			learnpi.showVictoryBlock = function(takenTime) {
+				var dps = this.digits.length / takenTime;
+			
+				$('#total-digit-count').text(this.digits.length);
+				$('#game-time').text(takenTime.toFixed(2));
+				$('#game-dps').text(dps.toFixed(2));
+			
+				$('#digit-input-block').hide();
+				$('#victory-block').show();
+			};
+		
+			learnpi.showInputBlock = function() {
+				$('#victory-block').hide();
+				$('#digit-input-block').show();			
+			};
+		
+			learnpi.giveHintSum = function() {
+				var digit = this.digits[this.currentDigitIndex];
+				var digitNumber = parseInt(digit, 10);
+			
+				var sumTerm1 = Math.floor(Math.random() * (digitNumber + 1));
+				var sumTerm2 = digitNumber - sumTerm1;
+			
+				this.showHintSum(sumTerm1, sumTerm2)
+			};
+		
+			learnpi.bindHandlers = function() {
+				var self = this;
+				$('#digit-input').keyup(function() {
+					self.tryAnswer($(this).val());
+				});
+				$('#reset-button, #replay-button').click(function() {
+					self.restart();
+				})
+			};
+		
+			learnpi.isAnswerCorrect = function(givenAnswer) {
+				var correctAnswer = this.digits[this.currentDigitIndex];
+				return correctAnswer == givenAnswer;
+			};
+		
+			learnpi.startTimer = function() {
+				this.startTime = new Date().getTime();
+			};
+		
+			learnpi.takenTime = function() {
+				return (new Date().getTime() - this.startTime) / 1000;
+			};
+		
+			learnpi.handleVictory = function() {
+				this.showDigits();
+				this.showVictoryBlock(this.takenTime());
+			};
+		
+			learnpi.setupForDigit = function() {
+				this.showDigits();
+				this.giveHintSum();
+				this.clearInput();
+				this.focusOnInput();
+			};
+		
+			learnpi.nextDigit = function() {
+				this.currentDigitIndex += 1;
+			};
+		
+			learnpi.matchAnswer = function(givenAnswer) {
+				var matchedDigitCount = 0;
+				var start = this.currentDigitIndex;
+			
+				for (var i = 0; i < givenAnswer.length; i++) {
+					if (this.digits[start+i] == givenAnswer[i]) {
+						matchedDigitCount += 1;
+					} else {
+						break;
+					}
+				}
+			
+				return matchedDigitCount;
+			};
+		
+			learnpi.tryAnswer = function(givenAnswer) {
+				var matchedDigitCount = this.matchAnswer(givenAnswer);
+				if (matchedDigitCount > 0) {
+					if (this.currentDigitIndex == 0) {
+						this.startTimer();
+					}
+
+					this.currentDigitIndex += matchedDigitCount;
+
+					if (this.currentDigitIndex >= this.digits.length) {
+						this.handleVictory();
+					} else {
+						this.setupForDigit();
+					}
+				} else {
+					this.clearInput();
+				}
+			};
+		
+			learnpi.restart = function() {
+				this.currentDigitIndex = 0;
+				this.setupForDigit();
+				this.showInputBlock();
+			};
+		
+			learnpi.start = function() {
+				this.hideJavascriptMessage();
+				this.bindHandlers();
+				this.restart();
+			};
+		
+			google.setOnLoadCallback(function() {
+				$(document).ready(function() {
+					learnpi.start();
+				});
+			});
+
+			google.load('jquery', '1.3');
+	
+		</script>
+	</body>
+</html>
+	
