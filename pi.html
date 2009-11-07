@@ -15,30 +15,39 @@
 		<style type="text/css">
 		
 			body {
-				font-family: "Georgia", serif;
+				font-family: monospace;
 				font-size: 12pt;
 				margin: 50px;
+				margin-right: 0;
 			}
 			
 			h1 {
 				display: none;
 			}
 			
-			#digit-input-block {
-				display: inline-block;
-				text-align: center;
-				margin-left: auto;
-			}
-
 			#victory-block {
 				text-align: center;
 				margin-top: 1em;
 			}
 
+			#digit-input-block {
+				display: inline-block;
+				position: relative;
+				width: 5em;
+				margin-left: -2.5em;
+				margin-right: -2.5em;
+				top: 3.54em;
+				margin-top: -3.54em;
+				text-align: center;
+			}
+
 			#digit-input {
-				font-family: "Georgia", serif;
+				font-family: monospace;
 				font-size: 24pt;
 				width: 1.5em;
+				display: block;
+				position: relative;
+				left: 2.49em;
 				border: 0;
 				padding: 0;
 				margin: 0;
@@ -52,17 +61,19 @@
 				font-weight: bold;
 			}
 			
-			#game-area {
-				display: inline-block;
-			}
-			
-			.game-form {
-				text-align: right;
-			}
-			
 			.pi {
 				font-size: 24pt;
 				margin: 0;
+			}
+			
+			#pi-start {
+				float: left;
+			}
+			
+			.pi-digits-wrapper {
+				display: block;
+				margin-left: 1.5em;
+				margin-right: 2.5em;
 			}
 			
 			.victory-message {
@@ -71,6 +82,7 @@
 			}
 			
 			#hint-sum {
+				display: block;
 				font-size: 18pt;
 				margin: 1em 0;
 			}
@@ -94,15 +106,17 @@
 			This game requires Javascript to run.
 		</p>
 		<div id="game-area" style="display: none">
-			<p class="pi">
-				<span id="pi-start">3.</span>
-				<span id="pi-digits"></span><input id="digit-input" type="text" />
-			</p>
 			<form class="game-form">
-				<div id="digit-input-block">
-					<p id="hint-sum"></p>
-					<p><input id="reset-button" value="Start Over" type="button" /></p>
-				</div>
+				<p class="pi">
+					<span id="pi-start">3.</span>
+					<span class="pi-digits-wrapper">
+						<span id="pi-digits"></span><span id="digit-input-block">
+							<input id="digit-input" type="text" />
+							<span id="hint-sum"></span>
+							<input id="reset-button" value="Start Over" type="button" />
+						</span>
+					</span>
+				</p>
 				<div id="victory-block" style="display: none">
 					<p class="victory-message">
 						cleared <span id="total-digit-count"></span> digits in
@@ -121,8 +135,8 @@
 			learnpi = {};
 	
 			learnpi.digits = 
-				"1415926535";//8979323846264338327950288419716939937510" +
-				//"58209749445923078164062862089986280348253421170679";
+				"14159265358979323846264338327950288419716939937510" +
+				"58209749445923078164062862089986280348253421170679";
 		
 			learnpi.formattedDigits = function(digits) {
 				var formatted = '';
