@@ -52,7 +52,7 @@
 				font-weight: bold;
 			}
 			
-			.game-area {
+			#game-area {
 				display: inline-block;
 			}
 			
@@ -93,7 +93,7 @@
 		<p id="javascript-message">
 			This game requires Javascript to run.
 		</p>
-		<div class="game-area">
+		<div id="game-area" style="display: none">
 			<p class="pi">
 				<span id="pi-start">3.</span>
 				<span id="pi-digits"></span><input id="digit-input" type="text" />
@@ -169,6 +169,7 @@
 		
 			learnpi.hideJavascriptMessage = function() {
 				$('#javascript-message').hide();
+				$('#game-area').show();
 			};
 		
 			learnpi.showHintSum = function(term1, term2) {
