@@ -16,7 +16,7 @@
 		
 			body {
 				font-family: "Georgia", serif;
-				font-size: 14pt;
+				font-size: 12pt;
 				margin: 50px;
 			}
 			
@@ -41,6 +41,7 @@
 				width: 1.5em;
 				border: 0;
 				padding: 0;
+				margin: 0;
 			}
 			
 			#digit-input:focus {
@@ -61,15 +62,22 @@
 			
 			.pi {
 				font-size: 24pt;
+				margin: 0;
 			}
 			
 			.victory-message {
 				color: #888;
+				margin: 1.5em 0;
+			}
+			
+			#hint-sum {
+				font-size: 18pt;
+				margin: 1em 0;
 			}
 			
 			.clear-time-line {
 				color: black;
-				font-size: 24pt;
+				font-size: 18pt;
 				display: block;
 				margin-bottom: 0.1em;
 			}
@@ -92,7 +100,7 @@
 			</p>
 			<form class="game-form">
 				<div id="digit-input-block">
-					<p><span id="hint-sum"></span></p>
+					<p id="hint-sum"></p>
 					<p><input id="reset-button" value="Start Over" type="button" /></p>
 				</div>
 				<div id="victory-block" style="display: none">
@@ -150,6 +158,14 @@
 			learnpi.focusOnInput = function() {
 				$('#digit-input').focus();
 			};
+			
+			learnpi.hideInput = function() {
+				
+			};
+
+			learnpi.showInput = function() {
+				$('#digit-input').hide();
+			};
 		
 			learnpi.hideJavascriptMessage = function() {
 				$('#javascript-message').hide();
@@ -166,13 +182,15 @@
 				$('#clear-time').text(takenTime.toFixed(2));
 				$('#game-dps').text(dps.toFixed(2));
 			
+				$('#digit-input').hide();
 				$('#digit-input-block').hide();
 				$('#victory-block').show();
 			};
 		
 			learnpi.showInputBlock = function() {
 				$('#victory-block').hide();
-				$('#digit-input-block').show();			
+				$('#digit-input-block').show();
+				$('#digit-input').show();
 			};
 		
 			learnpi.giveHintSum = function() {
@@ -217,7 +235,6 @@
 				this.showDigits();
 				this.giveHintSum();
 				this.clearInput();
-				this.focusOnInput();
 			};
 		
 			learnpi.nextDigit = function() {
@@ -262,6 +279,7 @@
 				this.currentDigitIndex = 0;
 				this.setupForDigit();
 				this.showInputBlock();
+				this.focusOnInput();
 			};
 		
 			learnpi.start = function() {
