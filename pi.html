@@ -14,54 +14,36 @@
 		<title>Learn Pi 2</title>
 		<style type="text/css">
 		
+			body,
+			#digit-input {
+				font-family: monospace;				
+			}
+	
+			/*#victory-block,
+			#digit-input-block,
+			#pi,
+			#pi-start,
+			#pi-digits,
+			#digit-input,
+			.pi-digit-block,
+			#final-pi-digits {
+				border: 1px solid red;
+				padding: 1px;
+			}*/
+		
 			body {
-				font-family: monospace;
 				font-size: 12pt;
 				margin: 50px;
-				margin-right: 0;
 			}
 			
-			h1 {
-				display: none;
-			}
+			h1 { display: none; }
 			
 			#victory-block {
 				text-align: center;
 				margin-top: 1em;
 			}
-
-			#digit-input-block {
-				display: inline-block;
-				position: relative;
-				width: 5em;
-				margin-left: -2.5em;
-				margin-right: -2.5em;
-				top: 3.54em;
-				margin-top: -3.54em;
-				text-align: center;
-			}
-
-			#digit-input {
-				font-family: monospace;
-				font-size: 24pt;
-				width: 1.5em;
-				display: block;
-				position: relative;
-				left: 2.49em;
-				border: 0;
-				padding: 0;
-				margin: 0;
-			}
 			
-			#digit-input:focus {
-				outline: none;
-			}
-			
-			#last-pi-digit {
-				font-weight: bold;
-			}
-			
-			.pi {
+			#pi {
 				font-size: 24pt;
 				margin: 0;
 			}
@@ -70,11 +52,37 @@
 				float: left;
 			}
 			
-			.pi-digits-wrapper {
+			#pi-digits {
 				display: block;
 				margin-left: 1.5em;
-				margin-right: 2.5em;
 			}
+			
+			.pi-digit-block {
+				display: inline-block;
+				width: 6.4em;
+			}
+
+			#digit-input-block {
+				display: inline-block;
+				vertical-align: top;
+				width: 3em;
+				margin-left: -1.5em;
+				margin-right: -1.5em;
+				text-align: center;
+			}
+
+			#digit-input {
+				display: block;
+				width: 1.5em;
+				border: 0;
+				padding: 0;
+				margin: 0;
+				margin-left: auto;
+				margin-right: 0.05em;
+				font-size: 24pt;
+			}
+
+			#digit-input:focus { outline: none; }
 			
 			.victory-message {
 				color: #888;
@@ -107,13 +115,16 @@
 		</p>
 		<div id="game-area" style="display: none">
 			<form class="game-form">
-				<p class="pi">
+				<p id="pi">
 					<span id="pi-start">3.</span>
-					<span class="pi-digits-wrapper">
-						<span id="pi-digits"></span><span id="digit-input-block">
-							<input id="digit-input" type="text" />
-							<span id="hint-sum"></span>
-							<input id="reset-button" value="Start Over" type="button" />
+					<span id="pi-digits">
+						<span class="final pi-digit-block">
+							<span id="final-pi-digits">
+							</span><span id="digit-input-block">
+								<input id="digit-input" type="text" />
+								<span id="hint-sum"></span>
+								<input id="reset-button" value="Start Over" type="button" />
+							</span>
 						</span>
 					</span>
 				</p>
@@ -138,31 +149,29 @@
 				"14159265358979323846264338327950288419716939937510" +
 				"58209749445923078164062862089986280348253421170679";
 		
-			learnpi.formattedDigits = function(digits) {
-				var formatted = '';
-				var pos = 0;
-			
-				for (; pos + 10 <= digits.length; pos += 10) {
-					formatted += digits.slice(pos, pos + 10);
-					formatted += ' ';
-				}
-
-				if (pos != digits.length) {
-					formatted += digits.slice(pos);
-				}
-			
-				return formatted;
-			};
-		
 			learnpi.showDigits = function() {
-				var index = this.currentDigitIndex;
-			
-				if (index < 1) {
-					$('#pi-digits').text('');
-				} else {
-					var shownDigits = this.digits.slice(0, index);				
-					$('#pi-digits').text(this.formattedDigits(shownDigits));
-				}			
+				var digitBlockCount = Math.floor(this.currentDigitIndex / 10);
+				for (var blockIndex = 0; blockIndex < digitBlockCount; blockIndex++) {
+					var blockStart = blockIndex * 10;
+					var blockName = 'pi-digit-block-' + blockIndex;
+					
+					if ($('#' + blockName).length == 0) {
+						var blockDigits = this.digits.slice(blockStart, blockStart + 10);
+						
+						var blockElement = document.createElement('span');
+						blockElement.id = blockName;
+						blockElement.className = 'pi-digit-block';
+						blockElement.innerText = blockDigits;
+						
+						$('.final.pi-digit-block').before(blockElement);
+					}
+				}
+				
+				var finalDigitCount = this.currentDigitIndex % 10;
+				var finalDigitsStart = this.currentDigitIndex - finalDigitCount;
+				var finalDigits = this.digits.slice(finalDigitsStart, this.currentDigitIndex);
+				
+				$('#final-pi-digits').text(finalDigits);
 			};
 		
 			learnpi.clearInput = function() {
@@ -174,11 +183,11 @@
 			};
 			
 			learnpi.hideInput = function() {
-				
+				$('#digit-input').hide();
 			};
 
 			learnpi.showInput = function() {
-				$('#digit-input').hide();
+				$('#digit-input').show();
 			};
 		
 			learnpi.hideJavascriptMessage = function() {
@@ -215,7 +224,7 @@
 				var sumTerm1 = Math.floor(Math.random() * (digitNumber + 1));
 				var sumTerm2 = digitNumber - sumTerm1;
 			
-				this.showHintSum(sumTerm1, sumTerm2)
+				this.showHintSum(sumTerm1, sumTerm2);
 			};
 		
 			learnpi.bindHandlers = function() {
