@@ -16,17 +16,12 @@
 		
 			body {
 				font-family: "Georgia", serif;
-				font-size: 18pt;
+				font-size: 14pt;
 				margin: 50px;
 			}
 			
 			h1 {
 				display: none;
-			}
-			
-			p {
-				margin-top: 0.5em;
-				margin-bottom: 0.5em;
 			}
 			
 			#digit-input-block {
@@ -35,9 +30,21 @@
 				margin-left: auto;
 			}
 
+			#victory-block {
+				text-align: center;
+				margin-top: 1em;
+			}
+
 			#digit-input {
-				font-size: 16pt;
-				width: 2em;
+				font-family: "Georgia", serif;
+				font-size: 24pt;
+				width: 1.5em;
+				border: 0;
+				padding: 0;
+			}
+			
+			#digit-input:focus {
+				outline: none;
 			}
 			
 			#last-pi-digit {
@@ -55,6 +62,21 @@
 			.pi {
 				font-size: 24pt;
 			}
+			
+			.victory-message {
+				color: #888;
+			}
+			
+			.clear-time-line {
+				color: black;
+				font-size: 24pt;
+				display: block;
+				margin-bottom: 0.1em;
+			}
+			
+			#clear-time {
+				font-weight: bold;
+			}
 		
 		</style>
 	</head>
@@ -66,21 +88,21 @@
 		<div class="game-area">
 			<p class="pi">
 				<span id="pi-start">3.</span>
-				<span id="pi-digits"></span><span id="last-pi-digit"></span>
+				<span id="pi-digits"></span><input id="digit-input" type="text" />
 			</p>
 			<form class="game-form">
 				<div id="digit-input-block">
-					<p>
-						<span id="hint-sum"></span>
-						<input id="digit-input" type="text" />
-					</p>
-					<p>
-						<input id="reset-button" value="Start Over" type="button" />
-					</p>
+					<p><span id="hint-sum"></span></p>
+					<p><input id="reset-button" value="Start Over" type="button" /></p>
 				</div>
 				<div id="victory-block" style="display: none">
-					<p>Congratulations!</p>
-					<p>You got through <span id="total-digit-count"></span> digits in <span id="game-time"></span> seconds: <span id="game-dps"></span> digits per second.</p>
+					<p class="victory-message">
+						cleared <span id="total-digit-count"></span> digits in
+						<span class="clear-time-line">
+							<span id="clear-time"></span> seconds
+						</span>
+						<span id="game-dps"></span> digits per second.
+					</p>
 					<p><input id="replay-button" value="Play again" type="button" /></p>
 				</div>
 			</form>
@@ -91,8 +113,8 @@
 			learnpi = {};
 	
 			learnpi.digits = 
-				"14159265358979323846264338327950288419716939937510" +
-				"58209749445923078164062862089986280348253421170679";
+				"1415926535";//8979323846264338327950288419716939937510" +
+				//"58209749445923078164062862089986280348253421170679";
 		
 			learnpi.formattedDigits = function(digits) {
 				var formatted = '';
@@ -115,15 +137,9 @@
 			
 				if (index < 1) {
 					$('#pi-digits').text('');
-					$('#last-pi-digit').text('');
-				} else if (index == 1) {
-					$('#pi-digits').text('');
-					$('#last-pi-digit').text(this.digits[index - 1]);
 				} else {
-					var shownDigits = this.digits.slice(0, index - 1);
-				
+					var shownDigits = this.digits.slice(0, index);				
 					$('#pi-digits').text(this.formattedDigits(shownDigits));
-					$('#last-pi-digit').text(this.digits[index - 1]);
 				}			
 			};
 		
@@ -140,14 +156,14 @@
 			};
 		
 			learnpi.showHintSum = function(term1, term2) {
-				$('#hint-sum').text(term1 + " + " + term2 + " =");
+				$('#hint-sum').text([term1, term2].join(' + '));
 			};
 		
 			learnpi.showVictoryBlock = function(takenTime) {
 				var dps = this.digits.length / takenTime;
 			
 				$('#total-digit-count').text(this.digits.length);
-				$('#game-time').text(takenTime.toFixed(2));
+				$('#clear-time').text(takenTime.toFixed(2));
 				$('#game-dps').text(dps.toFixed(2));
 			
 				$('#digit-input-block').hide();
