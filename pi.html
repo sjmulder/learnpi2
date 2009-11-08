@@ -171,6 +171,10 @@
 				$('#final-pi-digits').text(finalDigits);
 			};
 		
+			learnpi.clearOldDigits = function() {
+				$('#.generated.pi-digit-block').remove();
+			}
+		
 			learnpi.clearInput = function() {
 				$('#digit-input').val('');
 			};
