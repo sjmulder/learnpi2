@@ -157,7 +157,7 @@
 						
 						var blockElement = document.createElement('span');
 						blockElement.id = blockName;
-						blockElement.className = 'pi-digit-block';
+						blockElement.className = 'generated pi-digit-block';
 						$(blockElement).text(blockDigits);
 						
 						$('.final.pi-digit-block').before(blockElement);
@@ -170,6 +170,10 @@
 				
 				$('#final-pi-digits').text(finalDigits);
 			};
+		
+			learnpi.clearOldDigits = function() {
+				$('#.generated.pi-digit-block').remove();
+			}
 		
 			learnpi.clearInput = function() {
 				$('#digit-input').val('');
@@ -298,6 +302,7 @@
 		
 			learnpi.restart = function() {
 				this.currentDigitIndex = 0;
+				this.clearOldDigits();
 				this.setupForDigit();
 				this.showInputBlock();
 				this.focusOnInput();
